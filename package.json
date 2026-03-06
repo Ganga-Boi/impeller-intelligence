@@ -1,0 +1,9 @@
+{
+  "name": "impeller-intelligence",
+  "version": "1.0.0",
+  "description": "Impeller field feedback analysis powered by Claude AI",
+  "private": true,
+  "engines": {
+    "node": ">=18"
+  }
+}
