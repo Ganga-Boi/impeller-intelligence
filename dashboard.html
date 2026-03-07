@@ -54,6 +54,10 @@ models.forEach((m, i) => {
   </div>`;
 });
 
+} // end renderDashboard
+
+// Load on startup
+loadData();
 </script>
 <style>
 :root {
@@ -671,18 +675,55 @@ header {
 </div>
 
 <script>
-// ── SAMPLE DATA (replace with live API data later) ────────────────────────
-const submissions = [
-  { model:"7C/3150/6", category:"Inlet distortion", system_issue:"Inlet duct configuration", severity:3, confidence:88, installation_issue_vs_design_issue:"Installation issue", impeller_type_relevance:"Medium", time:"09:12" },
-  { model:"5C/800/4", category:"Flow deviation", system_issue:"System resistance too high", severity:4, confidence:82, installation_issue_vs_design_issue:"Installation issue", impeller_type_relevance:"High", time:"10:34" },
-  { model:"9C/2500/8", category:"Noise", system_issue:"Blade frequency resonance", severity:2, confidence:91, installation_issue_vs_design_issue:"Design issue", impeller_type_relevance:"High", time:"11:05" },
-  { model:"7C/3150/6", category:"Pressure issue", system_issue:"Restricted inlet", severity:2, confidence:75, installation_issue_vs_design_issue:"Installation issue", impeller_type_relevance:"Low", time:"13:20" },
-  { model:"4C/630/4", category:"Vibration", system_issue:"Mass imbalance", severity:4, confidence:94, installation_issue_vs_design_issue:"Installation issue", impeller_type_relevance:"Medium", time:"14:47" },
-  { model:"9C/2500/8", category:"Inlet distortion", system_issue:"Inlet duct configuration", severity:3, confidence:86, installation_issue_vs_design_issue:"Installation issue", impeller_type_relevance:"Medium", time:"15:02" },
-  { model:"5C/800/4", category:"Flow deviation", system_issue:"Blade pitch mismatch", severity:3, confidence:79, installation_issue_vs_design_issue:"Design issue", impeller_type_relevance:"High", time:"15:55" },
-  { model:"7C/3150/6", category:"Noise", system_issue:"Turbulent inlet flow", severity:2, confidence:83, installation_issue_vs_design_issue:"Both", impeller_type_relevance:"Medium", time:"16:30" },
-];
+const SUPABASE_URL = 'https://dnjkexltcdgpjjmqwwmk.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRuamtleGx0Y2RncGpqbXF3d21rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4NzgyMzAsImV4cCI6MjA4ODQ1NDIzMH0.GpJ0woQTur1HFpPDl-pRLZDpiO7eJESrr6IxE2HF8Q4';
 
+// Fetch live data from Supabase
+async function loadData() {
+  try {
+    const res = await fetch(, {
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': 
+      }
+    });
+    const rows = await res.json();
+
+    // Map Supabase columns to dashboard format
+    const submissions = rows.map(r => ({
+      model: r.model || '—',
+      category: r.category || 'Unknown',
+      system_issue: r.system_issue || '—',
+      severity: Number(r.severity) || 1,
+      confidence: Number(r.confidence) || 0,
+      installation_issue_vs_design_issue: r.installation_vs_design || 'Unclear',
+      impeller_type_relevance: r.impeller_relevance || 'Low',
+      time: new Date(r.created_at).toLocaleTimeString('da-DK', {hour:'2-digit', minute:'2-digit'})
+    }));
+
+    if (submissions.length === 0) {
+      document.getElementById('kpiTotal').textContent = '0';
+      document.getElementById('kpiAvgConf').textContent = '—';
+      document.getElementById('kpiInstall').textContent = '—';
+      document.getElementById('statTopCat').textContent = 'No data';
+      document.getElementById('statTopPct').textContent = '';
+      document.getElementById('statAvgSev').textContent = '—';
+      document.getElementById('statInstallPct').textContent = '—';
+      document.getElementById('statHighSev').textContent = '0';
+      return;
+    }
+
+    renderDashboard(submissions);
+  } catch(e) {
+    console.error('Supabase fetch failed:', e);
+    document.getElementById('kpiTotal').textContent = 'ERR';
+  }
+}
+
+// Placeholder — will be replaced by renderDashboard
+const submissions = [];
+
+function renderDashboard(submissions) {
 // ── KPI ────────────────────────────────────────────────────────────────────
 const total = submissions.length;
 const avgConf = Math.round(submissions.reduce((a,s) => a + s.confidence, 0) / total);
@@ -804,6 +845,10 @@ const tbody = document.getElementById('recentTable');
     <td style="font-family:'Barlow Condensed',sans-serif;color:#b0b4b8;font-size:11px;">${s.time}</td>
   </tr>`;
 });
+} // end renderDashboard
+
+// Load on startup
+loadData();
 </script>
 </body>
 </html>
