@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MULTI*WING — Field Feedback Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+:root {
+  --bg: #f0f1f2;
+  --white: #ffffff;
+  --black: #0a0a0a;
+  --grey-light: #e8e9eb;
+  --grey-mid: #b0b4b8;
+  --grey-dark: #6b7075;
+  --green: #2e7d4f;
+  --yellow: #e8a020;
+  --red: #c0392b;
+  --blue: #1a6eb5;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Barlow', sans-serif;
+  background: var(--bg);
+  color: var(--black);
+  min-height: 100vh;
+}
+
+/* HEADER */
+header {
+  background: var(--white);
+  border-bottom: 1px solid var(--grey-light);
+  padding: 0 40px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo-lockup {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: var(--black);
+}
+
+.lw-star-wrap {
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
+  margin: 0 1px;
+}
+
+.lw-star {
+  width: 19px;
+  height: 19px;
+  animation: spin-blade 8s linear infinite;
+}
+
+@keyframes spin-blade {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.logo-wordmark {
+  display: flex;
+  flex-direction: column;
+  line-height: 1;
+}
+
+.lw-multi, .lw-wing {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 21px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  color: var(--black);
+}
+
+.lw-tm {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  vertical-align: super;
+  margin-left: 1px;
+}
+
+.lw-sub {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--grey-dark);
+  margin-top: 2px;
+}
+
+.nav-links {
+  display: flex;
+  gap: 4px;
+}
+
+.nav-link {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--grey-dark);
+  text-decoration: none;
+  padding: 8px 16px;
+  border-radius: 100px;
+  transition: all 0.15s;
+}
+
+.nav-link:hover, .nav-link.active {
+  background: var(--black);
+  color: white;
+}
+
+/* HERO */
+.hero {
+  background: var(--black);
+  color: white;
+  padding: 40px 40px;
+}
+
+.hero-eyebrow {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.4);
+  margin-bottom: 8px;
+}
+
+.hero-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 40px;
+}
+
+.hero-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 48px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  line-height: 1;
+}
+
+.kpi-row {
+  display: flex;
+  gap: 40px;
+}
+
+.kpi {
+  text-align: right;
+}
+
+.kpi-num {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 36px;
+  font-weight: 800;
+  line-height: 1;
+  color: white;
+}
+
+.kpi-label {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.4);
+  margin-top: 2px;
+}
+
+/* MAIN */
+.main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px;
+}
+
+.section-eyebrow {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--grey-dark);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.section-eyebrow::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--grey-light);
+}
+
+/* GRID */
+.grid-4 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 1px;
+  background: var(--grey-light);
+  margin-bottom: 1px;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: var(--grey-light);
+  margin-bottom: 1px;
+}
+
+.grid-3 {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 1px;
+  background: var(--grey-light);
+}
+
+.card {
+  background: var(--white);
+  padding: 28px;
+}
+
+.card-label {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--grey-dark);
+  margin-bottom: 20px;
+}
+
+/* Stat cards */
+.stat-num {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 42px;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--black);
+}
+
+.stat-label {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--grey-dark);
+  margin-top: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.stat-trend {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  margin-top: 8px;
+  letter-spacing: 0.05em;
+}
+
+.stat-trend.up { color: var(--red); }
+.stat-trend.down { color: var(--green); }
+
+/* Severity list */
+.sev-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--grey-light);
+  gap: 12px;
+}
+
+.sev-row:last-child { border-bottom: none; }
+
+.sev-num {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  width: 24px;
+  flex-shrink: 0;
+}
+
+.sev-bar-wrap {
+  flex: 1;
+  height: 6px;
+  background: var(--grey-light);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.sev-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.8s ease;
+}
+
+.sev-count {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  width: 20px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+/* Issue list */
+.issue-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--grey-light);
+}
+
+.issue-row:last-child { border-bottom: none; }
+
+.issue-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.issue-name {
+  font-size: 13px;
+  font-weight: 500;
+  flex: 1;
+}
+
+.issue-count {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--grey-dark);
+}
+
+.issue-pct {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--grey-mid);
+  width: 36px;
+  text-align: right;
+}
+
+/* Recent submissions table */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--grey-dark);
+  text-align: left;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--grey-light);
+}
+
+.table td {
+  font-size: 13px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--grey-light);
+  vertical-align: middle;
+}
+
+.table tr:last-child td { border-bottom: none; }
+
+.cat-pill {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 100px;
+  display: inline-block;
+}
+
+.cat-flow { background: #dbeafe; color: #1a6eb5; }
+.cat-noise { background: #ede9fe; color: #6d28d9; }
+.cat-vib { background: #fef3c7; color: #92400e; }
+.cat-pres { background: #dcfce7; color: #166534; }
+.cat-inlet { background: #fee2e2; color: #991b1b; }
+
+.sev-badge {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 12px;
+  font-weight: 800;
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+}
+
+.sev-1, .sev-2 { background: #dcfce7; color: #166534; }
+.sev-3 { background: #fef3c7; color: #92400e; }
+.sev-4, .sev-5 { background: #fee2e2; color: #991b1b; }
+
+.install-tag {
+  font-size: 11px;
+  color: var(--grey-dark);
+}
+
+@media (max-width: 900px) {
+  .grid-4 { grid-template-columns: 1fr 1fr; }
+  .grid-3 { grid-template-columns: 1fr; }
+  .kpi-row { display: none; }
+  header, .hero, .main { padding-left: 20px; padding-right: 20px; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <a class="logo-lockup" href="/">
+    <div class="logo-wordmark">
+      <div style="display:flex;align-items:center;">
+        <span class="lw-multi">MULTI</span>
+        <span class="lw-star-wrap">
+          <svg class="lw-star" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <path d="M41 50 L37 9 Q50 1 63 9 L59 50 Z" fill="#0a0a0a" transform="rotate(0 50 50)"/>
+            <path d="M41 50 L37 9 Q50 1 63 9 L59 50 Z" fill="#0a0a0a" transform="rotate(60 50 50)"/>
+            <path d="M41 50 L37 9 Q50 1 63 9 L59 50 Z" fill="#0a0a0a" transform="rotate(120 50 50)"/>
+            <path d="M41 50 L37 9 Q50 1 63 9 L59 50 Z" fill="#0a0a0a" transform="rotate(180 50 50)"/>
+            <path d="M41 50 L37 9 Q50 1 63 9 L59 50 Z" fill="#0a0a0a" transform="rotate(240 50 50)"/>
+            <path d="M41 50 L37 9 Q50 1 63 9 L59 50 Z" fill="#0a0a0a" transform="rotate(300 50 50)"/>
+          </svg>
+        </span>
+        <span class="lw-wing">WING</span><span class="lw-tm">™</span>
+      </div>
+      <span class="lw-sub">Field Feedback Dashboard</span>
+    </div>
+  </a>
+  <nav class="nav-links">
+    <a class="nav-link" href="/">Submit Feedback</a>
+    <a class="nav-link active" href="/dashboard.html">Dashboard</a>
+  </nav>
+</header>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-eyebrow">Real-time analysis overview</div>
+  <div class="hero-row">
+    <div class="hero-title">Field Feedback<br>Intelligence</div>
+    <div class="kpi-row">
+      <div class="kpi">
+        <div class="kpi-num" id="kpiTotal">—</div>
+        <div class="kpi-label">Total Submissions</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-num" id="kpiAvgConf">—</div>
+        <div class="kpi-label">Avg Confidence</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-num" id="kpiInstall">—</div>
+        <div class="kpi-label">Install Issues</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- Stat cards -->
+  <div class="section-eyebrow" style="margin-top:0;">Key Metrics</div>
+  <div class="grid-4" style="margin-bottom:24px;">
+    <div class="card">
+      <div class="card-label">Most Common Issue</div>
+      <div class="stat-num" id="statTopCat" style="font-size:28px;">—</div>
+      <div class="stat-trend up" id="statTopPct"></div>
+    </div>
+    <div class="card">
+      <div class="card-label">Avg Severity</div>
+      <div class="stat-num" id="statAvgSev">—</div>
+      <div class="stat-label">out of 5</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Installation vs Design</div>
+      <div class="stat-num" id="statInstallPct" style="color:var(--red);">—</div>
+      <div class="stat-label">Installation issues</div>
+    </div>
+    <div class="card">
+      <div class="card-label">High Severity (4-5)</div>
+      <div class="stat-num" id="statHighSev" style="color:var(--red);">—</div>
+      <div class="stat-label">cases need attention</div>
+    </div>
+  </div>
+
+  <!-- Charts row -->
+  <div class="section-eyebrow">Issue Breakdown</div>
+  <div class="grid-2" style="margin-bottom:24px;">
+    <div class="card">
+      <div class="card-label">Problem Categories</div>
+      <canvas id="categoryChart" height="200"></canvas>
+    </div>
+    <div class="card">
+      <div class="card-label">Installation vs Design Issue</div>
+      <canvas id="installChart" height="200"></canvas>
+    </div>
+  </div>
+
+  <!-- Severity + causes -->
+  <div class="section-eyebrow">Severity & Root Causes</div>
+  <div class="grid-3" style="margin-bottom:24px;">
+    <div class="card">
+      <div class="card-label">Top System Issues</div>
+      <div id="issueList"></div>
+    </div>
+    <div class="card">
+      <div class="card-label">Severity Distribution</div>
+      <div id="sevList"></div>
+    </div>
+    <div class="card">
+      <div class="card-label">Impeller Relevance</div>
+      <canvas id="relevanceChart" height="180"></canvas>
+    </div>
+  </div>
+
+  <!-- Recent submissions -->
+  <div class="section-eyebrow">Recent Submissions</div>
+  <div class="card" style="background:var(--white);padding:28px;">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Model</th>
+          <th>Category</th>
+          <th>System Issue</th>
+          <th>Sev</th>
+          <th>Conf</th>
+          <th>Type</th>
+          <th>Time</th>
+        </tr>
+      </thead>
+      <tbody id="recentTable"></tbody>
+    </table>
+  </div>
+
+</div>
+
+<script>
+// ── SAMPLE DATA (replace with live API data later) ────────────────────────
+const submissions = [
+  { model:"7C/3150/6", category:"Inlet distortion", system_issue:"Inlet duct configuration", severity:3, confidence:88, installation_issue_vs_design_issue:"Installation issue", impeller_type_relevance:"Medium", time:"09:12" },
+  { model:"5C/800/4", category:"Flow deviation", system_issue:"System resistance too high", severity:4, confidence:82, installation_issue_vs_design_issue:"Installation issue", impeller_type_relevance:"High", time:"10:34" },
+  { model:"9C/2500/8", category:"Noise", system_issue:"Blade frequency resonance", severity:2, confidence:91, installation_issue_vs_design_issue:"Design issue", impeller_type_relevance:"High", time:"11:05" },
+  { model:"7C/3150/6", category:"Pressure issue", system_issue:"Restricted inlet", severity:2, confidence:75, installation_issue_vs_design_issue:"Installation issue", impeller_type_relevance:"Low", time:"13:20" },
+  { model:"4C/630/4", category:"Vibration", system_issue:"Mass imbalance", severity:4, confidence:94, installation_issue_vs_design_issue:"Installation issue", impeller_type_relevance:"Medium", time:"14:47" },
+  { model:"9C/2500/8", category:"Inlet distortion", system_issue:"Inlet duct configuration", severity:3, confidence:86, installation_issue_vs_design_issue:"Installation issue", impeller_type_relevance:"Medium", time:"15:02" },
+  { model:"5C/800/4", category:"Flow deviation", system_issue:"Blade pitch mismatch", severity:3, confidence:79, installation_issue_vs_design_issue:"Design issue", impeller_type_relevance:"High", time:"15:55" },
+  { model:"7C/3150/6", category:"Noise", system_issue:"Turbulent inlet flow", severity:2, confidence:83, installation_issue_vs_design_issue:"Both", impeller_type_relevance:"Medium", time:"16:30" },
+];
+
+// ── KPI ────────────────────────────────────────────────────────────────────
+const total = submissions.length;
+const avgConf = Math.round(submissions.reduce((a,s) => a + s.confidence, 0) / total);
+const installCount = submissions.filter(s => s.installation_issue_vs_design_issue === 'Installation issue').length;
+const avgSev = (submissions.reduce((a,s) => a + s.severity, 0) / total).toFixed(1);
+const highSev = submissions.filter(s => s.severity >= 4).length;
+
+document.getElementById('kpiTotal').textContent = total;
+document.getElementById('kpiAvgConf').textContent = avgConf + '%';
+document.getElementById('kpiInstall').textContent = Math.round(installCount/total*100) + '%';
+document.getElementById('statAvgSev').textContent = avgSev;
+document.getElementById('statInstallPct').textContent = Math.round(installCount/total*100) + '%';
+document.getElementById('statHighSev').textContent = highSev;
+
+// Top category
+const catCount = {};
+submissions.forEach(s => catCount[s.category] = (catCount[s.category]||0)+1);
+const topCat = Object.entries(catCount).sort((a,b)=>b[1]-a[1])[0];
+document.getElementById('statTopCat').textContent = topCat[0];
+document.getElementById('statTopPct').textContent = Math.round(topCat[1]/total*100) + '% of submissions';
+
+// ── CHARTS ─────────────────────────────────────────────────────────────────
+const COLORS = ['#0a0a0a','#1a6eb5','#e8a020','#2e7d4f','#c0392b','#6d28d9','#0891b2'];
+
+// Category bar chart
+const cats = Object.entries(catCount).sort((a,b)=>b[1]-a[1]);
+new Chart(document.getElementById('categoryChart'), {
+  type: 'bar',
+  data: {
+    labels: cats.map(c=>c[0]),
+    datasets: [{ data: cats.map(c=>c[1]), backgroundColor: COLORS, borderRadius: 2, borderSkipped: false }]
+  },
+  options: {
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { grid: { display: false }, ticks: { font: { family:'Barlow Condensed', weight:'700', size:11 }, color:'#6b7075' } },
+      y: { grid: { color:'#f0f1f2' }, ticks: { stepSize:1, font: { family:'Barlow Condensed', size:11 }, color:'#6b7075' } }
+    }
+  }
+});
+
+// Install vs Design pie
+const installMap = {};
+submissions.forEach(s => installMap[s.installation_issue_vs_design_issue] = (installMap[s.installation_issue_vs_design_issue]||0)+1);
+new Chart(document.getElementById('installChart'), {
+  type: 'doughnut',
+  data: {
+    labels: Object.keys(installMap),
+    datasets: [{ data: Object.values(installMap), backgroundColor: ['#c0392b','#1a6eb5','#e8a020','#b0b4b8'], borderWidth: 0, hoverOffset: 4 }]
+  },
+  options: {
+    cutout: '65%',
+    plugins: { legend: { position:'bottom', labels: { font: { family:'Barlow Condensed', weight:'700', size:11 }, color:'#6b7075', padding:16, boxWidth:10 } } }
+  }
+});
+
+// Impeller relevance donut
+const relMap = {};
+submissions.forEach(s => relMap[s.impeller_type_relevance] = (relMap[s.impeller_type_relevance]||0)+1);
+new Chart(document.getElementById('relevanceChart'), {
+  type: 'doughnut',
+  data: {
+    labels: Object.keys(relMap),
+    datasets: [{ data: Object.values(relMap), backgroundColor: ['#0a0a0a','#6b7075','#b0b4b8'], borderWidth: 0 }]
+  },
+  options: {
+    cutout: '65%',
+    plugins: { legend: { position:'bottom', labels: { font: { family:'Barlow Condensed', weight:'700', size:11 }, color:'#6b7075', padding:12, boxWidth:10 } } }
+  }
+});
+
+// ── SEVERITY LIST ──────────────────────────────────────────────────────────
+const sevMap = {1:0,2:0,3:0,4:0,5:0};
+submissions.forEach(s => sevMap[s.severity]++);
+const maxSev = Math.max(...Object.values(sevMap));
+const sevColors = { 1:'#2e7d4f', 2:'#2e7d4f', 3:'#e8a020', 4:'#c0392b', 5:'#c0392b' };
+const sevEl = document.getElementById('sevList');
+[1,2,3,4,5].forEach(n => {
+  const pct = maxSev ? (sevMap[n]/maxSev*100) : 0;
+  sevEl.innerHTML += `<div class="sev-row">
+    <div class="sev-num">${n}</div>
+    <div class="sev-bar-wrap"><div class="sev-bar-fill" style="width:${pct}%;background:${sevColors[n]}"></div></div>
+    <div class="sev-count">${sevMap[n]}</div>
+  </div>`;
+});
+
+// ── ISSUE LIST ─────────────────────────────────────────────────────────────
+const issueMap = {};
+submissions.forEach(s => issueMap[s.system_issue] = (issueMap[s.system_issue]||0)+1);
+const issues = Object.entries(issueMap).sort((a,b)=>b[1]-a[1]);
+const issueEl = document.getElementById('issueList');
+issues.forEach(([name, count], i) => {
+  issueEl.innerHTML += `<div class="issue-row">
+    <div class="issue-dot" style="background:${COLORS[i%COLORS.length]}"></div>
+    <div class="issue-name">${name}</div>
+    <div class="issue-count">${count}</div>
+    <div class="issue-pct">${Math.round(count/total*100)}%</div>
+  </div>`;
+});
+
+// ── RECENT TABLE ───────────────────────────────────────────────────────────
+const catClass = {
+  'Inlet distortion':'cat-inlet',
+  'Flow deviation':'cat-flow',
+  'Noise':'cat-noise',
+  'Vibration':'cat-vib',
+  'Pressure issue':'cat-pres'
+};
+
+const tbody = document.getElementById('recentTable');
+[...submissions].reverse().forEach(s => {
+  tbody.innerHTML += `<tr>
+    <td style="font-family:'Barlow Condensed',sans-serif;font-weight:700;">${s.model}</td>
+    <td><span class="cat-pill ${catClass[s.category]||''}">${s.category}</span></td>
+    <td style="color:#6b7075;font-size:12px;">${s.system_issue}</td>
+    <td><span class="sev-badge sev-${s.severity}">${s.severity}</span></td>
+    <td style="font-family:'Barlow Condensed',sans-serif;font-weight:700;">${s.confidence}%</td>
+    <td class="install-tag">${s.installation_issue_vs_design_issue}</td>
+    <td style="font-family:'Barlow Condensed',sans-serif;color:#b0b4b8;font-size:11px;">${s.time}</td>
+  </tr>`;
+});
+</script>
+</body>
+</html>
