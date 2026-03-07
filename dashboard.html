@@ -5,7 +5,56 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MULTI*WING — Field Feedback Dashboard</title>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js">
+// ── MODEL RANKING ──────────────────────────────────────────────────────────
+const modelMap = {};
+submissions.forEach(s => {
+  if (!modelMap[s.model]) modelMap[s.model] = { issues: 0, totalSev: 0, cats: {} };
+  modelMap[s.model].issues++;
+  modelMap[s.model].totalSev += s.severity;
+  modelMap[s.model].cats[s.category] = (modelMap[s.model].cats[s.category]||0)+1;
+});
+
+const models = Object.entries(modelMap)
+  .map(([name, d]) => ({
+    name,
+    issues: d.issues,
+    avgSev: (d.totalSev / d.issues).toFixed(1),
+    topCause: Object.entries(d.cats).sort((a,b)=>b[1]-a[1])[0][0]
+  }))
+  .sort((a,b) => b.issues - a.issues || b.avgSev - a.avgSev);
+
+const maxIssues = models[0]?.issues || 1;
+const modelEl = document.getElementById('modelRanking');
+
+// Header
+modelEl.innerHTML = `<div class="model-row" style="padding-bottom:8px;border-bottom:2px solid var(--black);">
+  <div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:var(--grey-dark);">Model</div>
+  <div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:var(--grey-dark);">Issue Frequency</div>
+  <div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:var(--grey-dark);text-align:right;">Cases</div>
+  <div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:var(--grey-dark);text-align:center;">Avg Sev</div>
+  <div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:var(--grey-dark);text-align:right;">Top Issue</div>
+</div>`;
+
+const sevColor = avg => avg >= 4 ? '#c0392b' : avg >= 3 ? '#e8a020' : '#2e7d4f';
+const sevBg = avg => avg >= 4 ? '#fee2e2' : avg >= 3 ? '#fef3c7' : '#dcfce7';
+const barColor = (i) => ['#0a0a0a','#1a6eb5','#e8a020','#2e7d4f','#c0392b'][i % 5];
+
+models.forEach((m, i) => {
+  const pct = (m.issues / maxIssues * 100).toFixed(0);
+  const avg = parseFloat(m.avgSev);
+  modelEl.innerHTML += `<div class="model-row">
+    <div class="model-name">${m.name}</div>
+    <div class="model-bar-wrap">
+      <div class="model-bar-fill" style="width:${pct}%;background:${barColor(i)}"></div>
+    </div>
+    <div class="model-issues">${m.issues}<small>cases</small></div>
+    <div class="model-avgsev" style="background:${sevBg(avg)};color:${sevColor(avg)};">${m.avgSev}</div>
+    <div class="model-topcause">${m.topCause}</div>
+  </div>`;
+});
+
+</script>
 <style>
 :root {
   --bg: #f0f1f2;
@@ -425,6 +474,58 @@ header {
   color: var(--grey-dark);
 }
 
+.model-row {
+  display: grid;
+  grid-template-columns: 120px 1fr 60px 60px 80px;
+  align-items: center;
+  gap: 20px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--grey-light);
+}
+.model-row:last-child { border-bottom: none; }
+.model-name {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  color: var(--black);
+}
+.model-bar-wrap {
+  height: 8px;
+  background: var(--grey-light);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.model-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+}
+.model-issues {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 20px;
+  font-weight: 800;
+  text-align: right;
+}
+.model-issues small {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--grey-dark);
+  display: block;
+  line-height: 1;
+}
+.model-avgsev {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+.model-topcause {
+  font-size: 11px;
+  color: var(--grey-dark);
+  text-align: right;
+}
 @media (max-width: 900px) {
   .grid-4 { grid-template-columns: 1fr 1fr; }
   .grid-3 { grid-template-columns: 1fr; }
@@ -540,6 +641,12 @@ header {
       <div class="card-label">Impeller Relevance</div>
       <canvas id="relevanceChart" height="180"></canvas>
     </div>
+  </div>
+
+  <!-- Most problematic models -->
+  <div class="section-eyebrow">Most Problematic Impeller Models</div>
+  <div class="card" style="background:var(--white);padding:28px;margin-bottom:24px;">
+    <div id="modelRanking"></div>
   </div>
 
   <!-- Recent submissions -->
