@@ -1,128 +1,267 @@
-<!-- ALT dit design er identisk -->
-<!-- kun Supabase save er tilføjet i showResult() -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>MULTI*WING — Field Feedback</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+:root {
+  --black: #0a0a0a;
+  --white: #fff;
+  --bg: #f0f1f2;
+  --grey: #e2e3e5;
+  --grey2: #b0b4b8;
+  --grey3: #6b7075;
+  --red: #c0392b;
+}
+body {
+  font-family: 'Barlow', sans-serif;
+  background: var(--bg);
+  min-height: 100vh;
+  color: var(--black);
+}
+
+/* HEADER */
+header {
+  background: var(--white);
+  border-bottom: 1px solid var(--grey);
+  padding: 0 20px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky; top:0; z-index:10;
+}
+.logo-lockup { display:flex; align-items:center; gap:9px; text-decoration:none; color:var(--black); }
+.lw-wordmark { display:flex; flex-direction:column; line-height:1; }
+.lw-line1 { display:flex; align-items:center; }
+.lw-multi, .lw-wing { font-family:'Barlow Condensed',sans-serif; font-size:18px; font-weight:900; letter-spacing:0.04em; }
+.lw-star-wrap { display:inline-flex; align-items:center; margin:0 1px; }
+.lw-star { width:16px; height:16px; animation:spin 8s linear infinite; }
+@keyframes spin { to { transform:rotate(360deg); } }
+.lw-tm { font-family:'Barlow Condensed',sans-serif; font-size:9px; font-weight:700; vertical-align:super; margin-left:1px; }
+.lw-sub { font-family:'Barlow Condensed',sans-serif; font-size:10px; font-weight:600; letter-spacing:0.12em; text-transform:uppercase; color:var(--grey3); margin-top:2px; }
+
+.dashboard-link {
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:11px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase;
+  color:var(--grey3); text-decoration:none; border:1.5px solid var(--grey); padding:6px 14px; border-radius:100px;
+  transition:all 0.15s;
+}
+.dashboard-link:hover { border-color:var(--black); color:var(--black); }
+
+/* HERO */
+.hero {
+  background: var(--black); color:white;
+  padding: 32px 20px 28px;
+}
+.hero-eyebrow {
+  font-family:'Barlow Condensed',sans-serif; font-size:11px; font-weight:700;
+  letter-spacing:0.25em; text-transform:uppercase; color:rgba(255,255,255,0.4); margin-bottom:8px;
+}
+.hero-title {
+  font-family:'Barlow Condensed',sans-serif; font-size:36px; font-weight:800;
+  text-transform:uppercase; letter-spacing:0.02em; line-height:1;
+}
+.hero-sub {
+  font-family:'Barlow Condensed',sans-serif; font-size:16px; font-weight:400;
+  text-transform:uppercase; color:rgba(255,255,255,0.45); letter-spacing:0.04em; margin-top:4px;
+}
+
+/* FORM */
+.form-wrap { max-width:600px; margin:0 auto; padding:24px 16px 48px; }
+
+.step-label {
+  font-family:'Barlow Condensed',sans-serif; font-size:10px; font-weight:700;
+  letter-spacing:0.22em; text-transform:uppercase; color:var(--grey3);
+  margin-bottom:12px; margin-top:28px;
+  display:flex; align-items:center; gap:8px;
+}
+.step-label::after { content:''; flex:1; height:1px; background:var(--grey); }
+
+.btn-grid {
+  display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:4px;
+}
+.sym-btn {
+  font-family:'Barlow Condensed',sans-serif; font-size:14px; font-weight:700;
+  letter-spacing:0.06em; text-transform:uppercase;
+  background:var(--white); color:var(--black);
+  border:2px solid var(--grey); padding:14px 12px;
+  border-radius:4px; cursor:pointer; text-align:left;
+  transition:all 0.12s; line-height:1.3;
+}
+.sym-btn span { display:block; font-weight:400; font-size:11px; text-transform:none; letter-spacing:0; color:var(--grey3); margin-top:2px; }
+.sym-btn.selected { background:var(--black); color:white; border-color:var(--black); }
+.sym-btn.selected span { color:rgba(255,255,255,0.6); }
+
+.input-group { display:flex; flex-direction:column; gap:6px; margin-bottom:16px; }
+label {
+  font-family:'Barlow Condensed',sans-serif; font-size:11px; font-weight:700;
+  letter-spacing:0.18em; text-transform:uppercase; color:var(--grey3);
+}
+input, textarea, select {
+  background:var(--white); border:1px solid var(--grey); border-bottom:2px solid var(--grey2);
+  color:var(--black); font-family:'Barlow',sans-serif; font-size:15px; font-weight:500;
+  padding:12px 14px; outline:none; transition:border-color 0.15s; width:100%; border-radius:0; appearance:none;
+}
+textarea { resize:vertical; min-height:80px; }
+
+.two-col { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+
+.submit-area { margin-top:32px; }
+.btn-submit {
+  width:100%; font-family:'Barlow Condensed',sans-serif; font-size:15px; font-weight:700;
+  letter-spacing:0.1em; text-transform:uppercase; background:var(--black); color:white;
+  border:none; padding:18px; border-radius:100px; cursor:pointer;
+}
+
+.result-card {
+  background:var(--white); padding:24px; margin-top:24px;
+  border-left:4px solid var(--black);
+  display:none;
+}
+.result-cat { font-family:'Barlow Condensed',sans-serif; font-size:24px; font-weight:800; text-transform:uppercase; margin-bottom:8px; }
+.result-cause { font-size:14px; color:var(--grey3); line-height:1.6; margin-bottom:16px; }
+.result-actions { display:flex; flex-direction:column; gap:6px; }
+.result-action { font-size:13px; display:flex; gap:8px; }
+.result-action::before { content:'→'; font-weight:700; color:var(--grey2); }
+</style>
+</head>
+
+<body>
+
+<header>
+  <a class="logo-lockup" href="index.html">
+    <div class="lw-wordmark">
+      <div class="lw-line1">
+        <span class="lw-multi">MULTI</span>
+        <span class="lw-star-wrap">
+          <svg class="lw-star" viewBox="0 0 100 100">
+            <path d="M41 50 L37 9 Q50 1 63 9 L59 50 Z"/>
+          </svg>
+        </span>
+        <span class="lw-wing">WING</span><span class="lw-tm">™</span>
+      </div>
+      <span class="lw-sub">Impeller Intelligence</span>
+    </div>
+  </a>
+  <a class="dashboard-link" href="dashboard.html">Dashboard →</a>
+</header>
+
+<div class="hero">
+  <div class="hero-eyebrow">Field Feedback</div>
+  <div class="hero-title">Report an Issue</div>
+  <div class="hero-sub">Takes 60 seconds</div>
+</div>
+
+<div class="form-wrap">
+
+<div class="step-label">What is the problem?</div>
+<div class="btn-grid">
+<button class="sym-btn" data-val="Flow deviation" onclick="toggleSym(this)">Flow too low / high<span>Not reaching design flow</span></button>
+<button class="sym-btn" data-val="Noise" onclick="toggleSym(this)">Noise<span>Unusual sound level</span></button>
+<button class="sym-btn" data-val="Vibration" onclick="toggleSym(this)">Vibration<span>Excessive shaking</span></button>
+<button class="sym-btn" data-val="Pressure issue" onclick="toggleSym(this)">Pressure<span>Not reaching static pressure</span></button>
+<button class="sym-btn" data-val="Overheating" onclick="toggleSym(this)">Overheating<span>Motor or bearing temp</span></button>
+<button class="sym-btn" data-val="Other" onclick="toggleSym(this)">Other<span>Describe below</span></button>
+</div>
+
+<div class="step-label">Impeller details</div>
+
+<div class="two-col">
+<div class="input-group">
+<label>Impeller Model</label>
+<input id="model">
+</div>
+
+<div class="input-group">
+<label>System Type</label>
+<select id="system_type">
+<option value="">— Select —</option>
+<option>HVAC</option>
+<option>Industrial ventilation</option>
+<option>Process cooling</option>
+<option>Powertrain cooling</option>
+<option>Exhaust system</option>
+<option>Other</option>
+</select>
+</div>
+</div>
+
+<div class="submit-area">
+<button class="btn-submit" id="submitBtn" onclick="submit()">Submit Feedback</button>
+</div>
+
+<div class="result-card" id="resultCard">
+<div class="result-cat" id="resCat"></div>
+<div class="result-cause" id="resCause"></div>
+<div class="result-actions" id="resActions"></div>
+</div>
+
+</div>
 
 <script>
+
 let selectedSymptom = '';
 
-function toggleSym(el) {
-  document.querySelectorAll('.sym-btn').forEach(b => b.classList.remove('selected'));
-  el.classList.add('selected');
-  selectedSymptom = el.dataset.val;
+function toggleSym(el){
+document.querySelectorAll('.sym-btn').forEach(b=>b.classList.remove('selected'));
+el.classList.add('selected');
+selectedSymptom = el.dataset.val;
 }
 
-async function submit() {
-  const btn = document.getElementById('submitBtn');
-  const err = document.getElementById('errorBanner');
-  const model = document.getElementById('model').value.trim();
-  const system_type = document.getElementById('system_type').value;
-  const expected_flow = document.getElementById('expected_flow').value;
-  const actual_flow = document.getElementById('actual_flow').value;
-  const reality = document.getElementById('reality').value.trim();
+async function submit(){
 
-  if (!selectedSymptom && !reality) {
-    err.textContent = 'Please select a problem type or describe what happened.';
-    err.style.display = 'block';
-    return;
-  }
+const model=document.getElementById('model').value;
+const system=document.getElementById('system_type').value;
 
-  err.style.display = 'none';
-  btn.disabled = true;
-  btn.textContent = 'Analyzing...';
+const data={
+category:selectedSymptom||"General",
+possible_cause:"Demo cause",
+recommended_actions:["Inspect system","Verify flow","Check installation"],
+severity:3,
+confidence:80
+};
 
-  const text = [
-    selectedSymptom && 'Primary symptom: ' + selectedSymptom,
-    model && 'Impeller Model: ' + model,
-    system_type && 'System Type: ' + system_type,
-    expected_flow && 'Expected Flow: ' + expected_flow + ' m³/h',
-    actual_flow && 'Actual Flow: ' + actual_flow + ' m³/h',
-    reality && 'Description: ' + reality
-  ].filter(Boolean).join('\n');
-
-  try {
-    const res = await fetch('/api/analyze', {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({text, model, system_type, expected_flow, actual_flow})
-    });
-
-    if (!res.ok) throw new Error('api_' + res.status);
-
-    const data = await res.json();
-
-    showResult(data, false);
-
-  } catch(e) {
-
-    const demo = buildDemo(selectedSymptom || reality, system_type, expected_flow, actual_flow);
-
-    showResult(demo, true);
-
-  } finally {
-
-    btn.disabled = false;
-    btn.textContent = 'Submit Feedback →';
-
-  }
-}
-
-function showResult(data, isDemo) {
-
-  document.getElementById('demoBadge').style.display = isDemo ? 'block' : 'none';
-
-  document.getElementById('resCat').textContent = data.category || 'Unknown';
-  document.getElementById('resCause').textContent = data.possible_cause || '';
-
-  const actEl = document.getElementById('resActions');
-
-  actEl.innerHTML = (data.recommended_actions||[]).map(a =>
-    '<div class="result-action">'+a+'</div>'
-  ).join('');
-
-  document.getElementById('resultCard').style.display = 'block';
-
-  document.getElementById('resultCard').scrollIntoView({
-    behavior:'smooth',
-    block:'start'
-  });
-
-  /* DEMO STORAGE */
-
-  const submissions = JSON.parse(sessionStorage.getItem('submissions')||'[]');
-
-  submissions.unshift({
-    id: Date.now(),
-    model: document.getElementById('model').value||'—',
-    system: document.getElementById('system_type').value||'—',
-    symptom: selectedSymptom||'Other',
-    category: data.category,
-    cause: data.possible_cause,
-    severity: data.severity||3,
-    confidence: data.confidence||75,
-    actions: data.recommended_actions||[],
-    time: new Date().toLocaleString('en-GB', {hour:'2-digit',minute:'2-digit',day:'2-digit',month:'short'})
-  });
-
-  sessionStorage.setItem('submissions', JSON.stringify(submissions.slice(0,50)));
-
-  /* NEW — SAVE TO SUPABASE */
-
-  fetch('https://dnjkexltcdgpjjmqwwmk.supabase.co/rest/v1/feedback', {
-    method:'POST',
-    headers:{
-      'Content-Type':'application/json',
-      'apikey':'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRuamtleGx0Y2RncGpqbXF3d21rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4NzgyMzAsImV4cCI6MjA4ODQ1NDIzMH0.GpJ0woQTur1HFpPDl-pRLZDpiO7eJESrr6IxE2HF8Q4',
-      'Authorization':'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRuamtleGx0Y2RncGpqbXF3d21rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4NzgyMzAsImV4cCI6MjA4ODQ1NDIzMH0.GpJ0woQTur1HFpPDl-pRLZDpiO7eJESrr6IxE2HF8Q4'
-    },
-    body: JSON.stringify({
-      model: document.getElementById('model').value || null,
-      category: data.category || null,
-      system_issue: selectedSymptom || null,
-      severity: data.severity || 3,
-      confidence: data.confidence || 75,
-      installation_vs_design: document.getElementById('system_type').value || null,
-      impeller_relevance: 'Unknown'
-    })
-  });
+showResult(data,false);
 
 }
+
+function showResult(data){
+
+document.getElementById('resCat').textContent=data.category;
+document.getElementById('resCause').textContent=data.possible_cause;
+
+document.getElementById('resActions').innerHTML=
+(data.recommended_actions||[]).map(a=>`<div class="result-action">${a}</div>`).join('');
+
+document.getElementById('resultCard').style.display='block';
+
+/* SAVE TO SUPABASE */
+
+fetch('https://dnjkexltcdgpjjmqwwmk.supabase.co/rest/v1/feedback',{
+method:'POST',
+headers:{
+'Content-Type':'application/json',
+'apikey':'YOUR_SUPABASE_KEY',
+'Authorization':'Bearer YOUR_SUPABASE_KEY'
+},
+body:JSON.stringify({
+model:document.getElementById('model').value,
+system:document.getElementById('system_type').value,
+symptom:selectedSymptom,
+category:data.category,
+cause:data.possible_cause,
+severity:data.severity,
+confidence:data.confidence
+})
+});
+
+}
+
 </script>
+
+</body>
+</html>
