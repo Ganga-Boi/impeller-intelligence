@@ -4,134 +4,196 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>MULTI*WING — Field Feedback</title>
+
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+
 <style>
-* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-:root {
-  --black: #0a0a0a;
-  --white: #fff;
-  --bg: #f0f1f2;
-  --grey: #e2e3e5;
-  --grey2: #b0b4b8;
-  --grey3: #6b7075;
-  --red: #c0392b;
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+
+:root{
+--black:#0a0a0a;
+--white:#fff;
+--bg:#f0f1f2;
+--grey:#e2e3e5;
+--grey2:#b0b4b8;
+--grey3:#6b7075;
+--red:#c0392b;
 }
-body {
-  font-family: 'Barlow', sans-serif;
-  background: var(--bg);
-  min-height: 100vh;
-  color: var(--black);
+
+body{
+font-family:'Barlow',sans-serif;
+background:var(--bg);
+min-height:100vh;
+color:var(--black);
 }
 
 /* HEADER */
-header {
-  background: var(--white);
-  border-bottom: 1px solid var(--grey);
-  padding: 0 20px;
-  height: 56px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  position: sticky; top:0; z-index:10;
-}
-.logo-lockup { display:flex; align-items:center; gap:9px; text-decoration:none; color:var(--black); }
-.lw-wordmark { display:flex; flex-direction:column; line-height:1; }
-.lw-line1 { display:flex; align-items:center; }
-.lw-multi, .lw-wing { font-family:'Barlow Condensed',sans-serif; font-size:18px; font-weight:900; letter-spacing:0.04em; }
-.lw-star-wrap { display:inline-flex; align-items:center; margin:0 1px; }
-.lw-star { width:16px; height:16px; animation:spin 8s linear infinite; }
-@keyframes spin { to { transform:rotate(360deg); } }
-.lw-tm { font-family:'Barlow Condensed',sans-serif; font-size:9px; font-weight:700; vertical-align:super; margin-left:1px; }
-.lw-sub { font-family:'Barlow Condensed',sans-serif; font-size:10px; font-weight:600; letter-spacing:0.12em; text-transform:uppercase; color:var(--grey3); margin-top:2px; }
 
-.dashboard-link {
-  font-family:'Barlow Condensed',sans-serif;
-  font-size:11px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase;
-  color:var(--grey3); text-decoration:none; border:1.5px solid var(--grey); padding:6px 14px; border-radius:100px;
+header{
+background:var(--white);
+border-bottom:1px solid var(--grey);
+padding:0 20px;
+height:56px;
+display:flex;
+align-items:center;
+justify-content:space-between;
+position:sticky;
+top:0;
+z-index:10;
+}
+
+.logo-lockup{
+display:flex;
+align-items:center;
+gap:9px;
+text-decoration:none;
+color:var(--black);
+}
+
+.lw-wordmark{
+display:flex;
+flex-direction:column;
+line-height:1;
+}
+
+.lw-line1{
+display:flex;
+align-items:center;
+}
+
+.lw-multi,.lw-wing{
+font-family:'Barlow Condensed',sans-serif;
+font-size:18px;
+font-weight:900;
+letter-spacing:0.04em;
+}
+
+.lw-star{
+width:16px;
+height:16px;
+animation:spin 8s linear infinite;
+}
+
+@keyframes spin{to{transform:rotate(360deg);}}
+
+.lw-sub{
+font-family:'Barlow Condensed',sans-serif;
+font-size:10px;
+font-weight:600;
+letter-spacing:0.12em;
+text-transform:uppercase;
+color:var(--grey3);
+margin-top:2px;
+}
+
+.dashboard-link{
+font-family:'Barlow Condensed',sans-serif;
+font-size:11px;
+font-weight:700;
+letter-spacing:0.12em;
+text-transform:uppercase;
+color:var(--grey3);
+text-decoration:none;
+border:1.5px solid var(--grey);
+padding:6px 14px;
+border-radius:100px;
 }
 
 /* HERO */
-.hero {
-  background: var(--black); color:white;
-  padding: 32px 20px 28px;
-}
-.hero-eyebrow {
-  font-family:'Barlow Condensed',sans-serif; font-size:11px; font-weight:700;
-  letter-spacing:0.25em; text-transform:uppercase; color:rgba(255,255,255,0.4); margin-bottom:8px;
-}
-.hero-title {
-  font-family:'Barlow Condensed',sans-serif; font-size:36px; font-weight:800;
-  text-transform:uppercase; letter-spacing:0.02em; line-height:1;
-}
-.hero-sub {
-  font-family:'Barlow Condensed',sans-serif; font-size:16px; font-weight:400;
-  text-transform:uppercase; color:rgba(255,255,255,0.45); letter-spacing:0.04em; margin-top:4px;
+
+.hero{
+background:var(--black);
+color:white;
+padding:32px 20px 28px;
 }
 
-.form-wrap { max-width:600px; margin:0 auto; padding:24px 16px 48px; }
-
-.step-label {
-  font-family:'Barlow Condensed',sans-serif; font-size:10px; font-weight:700;
-  letter-spacing:0.22em; text-transform:uppercase; color:var(--grey3);
-  margin-bottom:12px; margin-top:28px;
+.hero-title{
+font-family:'Barlow Condensed',sans-serif;
+font-size:36px;
+font-weight:800;
+text-transform:uppercase;
+letter-spacing:0.02em;
+line-height:1;
 }
 
-.btn-grid {
-  display:grid; grid-template-columns:1fr 1fr; gap:10px;
-}
-.sym-btn {
-  font-family:'Barlow Condensed',sans-serif; font-size:14px; font-weight:700;
-  background:var(--white); border:2px solid var(--grey); padding:14px;
-  cursor:pointer;
-}
-.sym-btn.selected { background:var(--black); color:white; }
-
-.input-group { margin-bottom:16px; }
-
-input, textarea, select {
-  background:var(--white);
-  border:1px solid var(--grey);
-  border-bottom:2px solid var(--grey2);
-  font-family:'Barlow',sans-serif;
-  font-size:15px;
-  padding:12px;
-  width:100%;
+.form-wrap{
+max-width:600px;
+margin:0 auto;
+padding:24px 16px 48px;
 }
 
-textarea { min-height:80px; }
-
-.two-col { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
-
-.submit-area { margin-top:32px; }
-
-.btn-submit {
-  width:100%;
-  font-family:'Barlow Condensed',sans-serif;
-  font-size:15px;
-  font-weight:700;
-  letter-spacing:0.1em;
-  background:var(--black);
-  color:white;
-  border:none;
-  padding:18px;
-  border-radius:100px;
-  cursor:pointer;
+.step-label{
+font-family:'Barlow Condensed',sans-serif;
+font-size:10px;
+font-weight:700;
+letter-spacing:0.22em;
+text-transform:uppercase;
+color:var(--grey3);
+margin-bottom:12px;
+margin-top:28px;
 }
 
-.error-banner { background:#fdf0ef; border-left:3px solid var(--red); padding:10px 14px; display:none; }
-
-.result-card {
-  background:var(--white);
-  padding:24px;
-  margin-top:24px;
-  border-left:4px solid var(--black);
-  display:none;
+.btn-grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:10px;
 }
 
-.result-cat {
-  font-family:'Barlow Condensed',sans-serif;
-  font-size:24px;
-  font-weight:800;
+.sym-btn{
+font-family:'Barlow Condensed',sans-serif;
+font-size:14px;
+font-weight:700;
+background:var(--white);
+border:2px solid var(--grey);
+padding:14px;
+cursor:pointer;
+}
+
+.sym-btn.selected{
+background:var(--black);
+color:white;
+}
+
+input,textarea,select{
+background:var(--white);
+border:1px solid var(--grey);
+border-bottom:2px solid var(--grey2);
+font-family:'Barlow',sans-serif;
+font-size:15px;
+padding:12px;
+width:100%;
+}
+
+textarea{min-height:80px;}
+
+.two-col{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:12px;
+}
+
+.submit-area{margin-top:32px;}
+
+.btn-submit{
+width:100%;
+font-family:'Barlow Condensed',sans-serif;
+font-size:15px;
+font-weight:700;
+letter-spacing:0.1em;
+background:var(--black);
+color:white;
+border:none;
+padding:18px;
+border-radius:100px;
+cursor:pointer;
+}
+
+.result-card{
+background:var(--white);
+padding:24px;
+margin-top:24px;
+border-left:4px solid var(--black);
+display:none;
 }
 </style>
 </head>
@@ -139,32 +201,24 @@ textarea { min-height:80px; }
 <body>
 
 <header>
-  <a class="logo-lockup" href="index.html">
-    <div class="lw-wordmark">
-      <div class="lw-line1">
-        <span class="lw-multi">MULTI</span>
-        <span class="lw-star-wrap">
-          <svg class="lw-star" viewBox="0 0 100 100">
-            <path d="M41 50 L37 9 Q50 1 63 9 L59 50 Z"/>
-          </svg>
-        </span>
-        <span class="lw-wing">WING</span><span class="lw-tm">™</span>
-      </div>
-      <span class="lw-sub">Impeller Intelligence</span>
-    </div>
-  </a>
-  <a class="dashboard-link" href="dashboard.html">Dashboard →</a>
+<a class="logo-lockup" href="index.html">
+<div class="lw-wordmark">
+<div class="lw-line1">
+<span class="lw-multi">MULTI</span>
+<span class="lw-wing">WING</span>
+</div>
+<span class="lw-sub">Impeller Intelligence</span>
+</div>
+</a>
+
+<a class="dashboard-link" href="dashboard.html">Dashboard →</a>
 </header>
 
 <div class="hero">
-  <div class="hero-eyebrow">Field Feedback</div>
-  <div class="hero-title">Report an Issue</div>
-  <div class="hero-sub">Takes 60 seconds</div>
+<div class="hero-title">Report an Issue</div>
 </div>
 
 <div class="form-wrap">
-
-<div id="errorBanner" class="error-banner"></div>
 
 <div class="step-label">What is the problem?</div>
 
@@ -178,18 +232,14 @@ textarea { min-height:80px; }
 <div class="step-label">Impeller details</div>
 
 <div class="two-col">
-<div class="input-group">
 <input id="model" placeholder="Impeller model">
-</div>
 
-<div class="input-group">
 <select id="system_type">
 <option value="">System type</option>
 <option>HVAC</option>
 <option>Industrial ventilation</option>
 <option>Cooling</option>
 </select>
-</div>
 </div>
 
 <div class="two-col">
@@ -206,48 +256,46 @@ textarea { min-height:80px; }
 </div>
 
 <div class="result-card" id="resultCard">
-<div class="result-cat" id="resCat"></div>
+<div id="resCat"></div>
 </div>
 
 </div>
 
 <script>
 
-const SUPABASE_URL='https://dnjkexltcdgpjjmqwwmk.supabase.co'
-const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
+const SUPABASE_URL="https://dnjkexltcdgpjjmqwwmk.supabase.co";
+const SUPABASE_KEY="DIN_SUPABASE_ANON_KEY";
 
-let selectedSymptom=''
+let selectedSymptom="";
 
 function toggleSym(el){
-document.querySelectorAll('.sym-btn').forEach(b=>b.classList.remove('selected'))
-el.classList.add('selected')
-selectedSymptom=el.dataset.val
+document.querySelectorAll(".sym-btn").forEach(b=>b.classList.remove("selected"));
+el.classList.add("selected");
+selectedSymptom=el.dataset.val;
 }
 
 async function submit(){
 
 const data={
-model:document.getElementById('model').value,
-category:selectedSymptom,
-system_issue:document.getElementById('reality').value,
-severity:3,
-confidence:75,
-installation_vs_design:'Unknown',
-impeller_relevance:'Medium'
-}
+model:document.getElementById("model").value,
+system_type:document.getElementById("system_type").value,
+system_issue:selectedSymptom,
+probable_cause:document.getElementById("reality").value
+};
 
 await fetch(`${SUPABASE_URL}/rest/v1/feedback`,{
-method:'POST',
+method:"POST",
 headers:{
 apikey:SUPABASE_KEY,
 Authorization:`Bearer ${SUPABASE_KEY}`,
-'Content-Type':'application/json'
+"Content-Type":"application/json",
+Prefer:"return=minimal"
 },
 body:JSON.stringify(data)
-})
+});
 
-document.getElementById('resCat').innerText="Saved"
-document.getElementById('resultCard').style.display='block'
+document.getElementById("resCat").innerText="Saved";
+document.getElementById("resultCard").style.display="block";
 
 }
 
