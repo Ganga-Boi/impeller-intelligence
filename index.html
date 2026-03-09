@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -232,10 +233,8 @@ cursor:pointer;
 </header>
 
 <div class="hero">
-
 <div class="hero-title">Report an Issue</div>
 <div class="hero-sub">Takes 60 seconds</div>
-
 </div>
 
 <div class="container">
@@ -340,19 +339,12 @@ symptom=val
 async function submitFeedback(){
 
 const payload={
-
 symptom:symptom,
-
 model:document.getElementById("model").value,
-
 system:document.getElementById("system").value,
-
 expected_flow:document.getElementById("expected").value,
-
 actual_flow:document.getElementById("actual").value,
-
 description:document.getElementById("description").value
-
 }
 
 await fetch("https://dnjkexltcdgpjjmqwwmk.supabase.co/rest/v1/feedback",{
@@ -377,3 +369,4 @@ alert("Feedback submitted")
 
 </body>
 </html>
+```
