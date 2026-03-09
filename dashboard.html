@@ -1,28 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MULTI*WING — Field Feedback Dashboard</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
-:root{
---bg:#f0f1f2;
---white:#ffffff;
---black:#0a0a0a;
---grey-light:#e8e9eb;
---grey-mid:#b0b4b8;
---grey-dark:#6b7075;
---green:#2e7d4f;
---yellow:#e8a020;
---red:#c0392b;
---blue:#1a6eb5;
-}
 
-*{margin:0;padding:0;box-sizing:border-box;}
+*{margin:0;padding:0;box-sizing:border-box}
+
+:root{
+--black:#0a0a0a;
+--white:#fff;
+--bg:#f0f1f2;
+--grey:#e2e3e5;
+--grey2:#b0b4b8;
+--grey3:#6b7075;
+}
 
 body{
 font-family:'Barlow',sans-serif;
@@ -31,151 +27,104 @@ color:var(--black);
 min-height:100vh;
 }
 
+/* HEADER */
+
 header{
-background:var(--white);
-border-bottom:1px solid var(--grey-light);
-padding:0 40px;
-height:64px;
+background:white;
+border-bottom:1px solid var(--grey);
+padding:0 20px;
+height:56px;
 display:flex;
 align-items:center;
 justify-content:space-between;
 }
 
-.logo-lockup{
-display:flex;
-align-items:center;
-gap:10px;
-text-decoration:none;
-color:var(--black);
-}
-
-.lw-star{
-width:19px;
-height:19px;
-animation:spin-blade 8s linear infinite;
-}
-
-@keyframes spin-blade{
-from{transform:rotate(0deg);}
-to{transform:rotate(360deg);}
-}
-
-.logo-wordmark{
-display:flex;
-flex-direction:column;
-line-height:1;
-}
-
-.lw-multi,.lw-wing{
-font-family:'Barlow Condensed',sans-serif;
-font-size:21px;
+.logo{
+font-family:'Barlow Condensed';
 font-weight:900;
-letter-spacing:0.04em;
+font-size:18px;
+letter-spacing:.04em;
 }
 
-.lw-sub{
-font-family:'Barlow Condensed',sans-serif;
+.header-links a{
+font-family:'Barlow Condensed';
 font-size:11px;
-font-weight:600;
-letter-spacing:0.12em;
+letter-spacing:.12em;
 text-transform:uppercase;
-color:var(--grey-dark);
-margin-top:2px;
-}
-
-.nav-links{
-display:flex;
-gap:4px;
-}
-
-.nav-link{
-font-family:'Barlow Condensed',sans-serif;
-font-size:12px;
-font-weight:700;
-letter-spacing:0.1em;
-text-transform:uppercase;
-color:var(--grey-dark);
 text-decoration:none;
-padding:8px 16px;
-border-radius:100px;
+color:var(--grey3);
+margin-left:20px;
 }
 
-.nav-link.active{
-background:var(--black);
-color:white;
-}
+/* HERO */
 
 .hero{
-background:var(--black);
+background:black;
 color:white;
-padding:40px;
+padding:40px 20px;
 }
 
 .hero-title{
-font-family:'Barlow Condensed',sans-serif;
-font-size:48px;
-font-weight:800;
+font-family:'Barlow Condensed';
+font-size:42px;
+font-weight:900;
 text-transform:uppercase;
 line-height:1;
 }
 
-.kpi-row{
+.stats{
 display:flex;
-gap:40px;
+gap:60px;
+margin-top:20px;
 }
 
-.kpi{
-text-align:right;
-}
-
-.kpi-num{
-font-family:'Barlow Condensed',sans-serif;
+.stat-number{
+font-family:'Barlow Condensed';
 font-size:36px;
-font-weight:800;
+font-weight:900;
 }
 
-.kpi-label{
-font-family:'Barlow Condensed',sans-serif;
+.stat-label{
+font-family:'Barlow Condensed';
 font-size:10px;
-letter-spacing:0.2em;
+letter-spacing:.2em;
+color:#aaa;
 text-transform:uppercase;
-color:rgba(255,255,255,0.4);
 }
 
-.main{
-max-width:1200px;
-margin:auto;
-padding:40px;
+/* CONTENT */
+
+.container{
+max-width:900px;
+margin:40px auto;
+padding:0 20px;
 }
 
-.status-box{
+.submissions{
 background:white;
-padding:28px;
-margin-bottom:24px;
-color:var(--grey-dark);
-font-size:14px;
+padding:30px;
+border:1px solid var(--grey);
 }
 
-.table{
-width:100%;
-border-collapse:collapse;
+.item{
+padding:16px 0;
+border-bottom:1px solid var(--grey);
 }
 
-.table th{
-font-family:'Barlow Condensed',sans-serif;
-font-size:10px;
-letter-spacing:0.15em;
-text-transform:uppercase;
-color:var(--grey-dark);
-text-align:left;
-padding:8px 0;
-border-bottom:1px solid var(--grey-light);
+.item:last-child{
+border-bottom:none;
 }
 
-.table td{
+.model{
+font-family:'Barlow Condensed';
+font-size:18px;
+font-weight:700;
+}
+
+.meta{
 font-size:13px;
-padding:10px 0;
-border-bottom:1px solid var(--grey-light);
+color:var(--grey3);
+margin-top:4px;
 }
 
 </style>
@@ -184,111 +133,86 @@ border-bottom:1px solid var(--grey-light);
 <body>
 
 <header>
-<a class="logo-lockup" href="/">
-<div class="logo-wordmark">
-<div style="display:flex;align-items:center;">
-<span class="lw-multi">MULTI</span>
-<svg class="lw-star" viewBox="0 0 100 100">
-<circle cx="50" cy="50" r="45" fill="#0a0a0a"/>
-</svg>
-<span class="lw-wing">WING</span>
-</div>
-<span class="lw-sub">Field Feedback Dashboard</span>
-</div>
-</a>
 
-<nav class="nav-links">
-<a class="nav-link" href="/">Submit Feedback</a>
-<a class="nav-link active" href="/dashboard.html">Dashboard</a>
-</nav>
+<div class="logo">
+MULTI<span style="display:inline-block;transform:rotate(20deg)">✶</span>WING
+</div>
+
+<div class="header-links">
+<a href="index.html">Submit Feedback</a>
+</div>
+
 </header>
 
 <div class="hero">
-<div class="hero-title">Field Feedback<br>Intelligence</div>
 
-<div class="kpi-row">
-<div class="kpi">
-<div class="kpi-num" id="kpiTotal">0</div>
-<div class="kpi-label">Total Submissions</div>
+<div class="hero-title">
+Field Feedback<br>
+Intelligence
 </div>
 
-<div class="kpi">
-<div class="kpi-num" id="kpiModels">0</div>
-<div class="kpi-label">Unique Models</div>
+<div class="stats">
+
+<div>
+<div id="totalSubmissions" class="stat-number">0</div>
+<div class="stat-label">Total Submissions</div>
 </div>
+
+<div>
+<div id="uniqueModels" class="stat-number">0</div>
+<div class="stat-label">Unique Models</div>
 </div>
-</div>
-
-<div class="main">
-
-<div id="statusBox" class="status-box">Loading live data...</div>
-
-<div id="dashboardContent" style="display:none;">
-
-<table class="table">
-<thead>
-<tr>
-<th>Model</th>
-<th>System Type</th>
-<th>Issue</th>
-<th>Cause</th>
-<th>Time</th>
-</tr>
-</thead>
-<tbody id="recentTable"></tbody>
-</table>
 
 </div>
+
+</div>
+
+<div class="container">
+
+<div class="submissions" id="submissions">
+No submissions yet.
+</div>
+
 </div>
 
 <script>
 
-const SUPABASE_URL="https://dnjkexltcdgpjjmqwwmk.supabase.co";
-const SUPABASE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRuamtleGx0Y2RncGpqbXF3d21rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4NzgyMzAsImV4cCI6MjA4ODQ1NDIzMH0.GpJ0woQTur1HFpPDl-pRLZDpiO7eJESrr6IxE2HF8Q4";
+const SUPABASE_URL = "https://dnjkexltcdgpjjmqwwmk.supabase.co"
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
 
-async function loadData(){
+async function loadDashboard(){
 
-const res=await fetch(`${SUPABASE_URL}/rest/v1/feedback?select=*&order=id.desc`,{
+const res = await fetch(`${SUPABASE_URL}/rest/v1/feedback?select=*`,{
 headers:{
 apikey:SUPABASE_KEY,
 Authorization:`Bearer ${SUPABASE_KEY}`
 }
-});
+})
 
-const rows=await res.json();
+const data = await res.json()
 
-if(!rows.length){
-document.getElementById("statusBox").innerText="No submissions yet.";
-return;
+document.getElementById("totalSubmissions").innerText = data.length
+
+const models = [...new Set(data.map(r=>r.model))]
+document.getElementById("uniqueModels").innerText = models.length
+
+const container = document.getElementById("submissions")
+
+if(data.length === 0){
+container.innerHTML = "No submissions yet."
+return
 }
 
-document.getElementById("statusBox").style.display="none";
-document.getElementById("dashboardContent").style.display="block";
-
-document.getElementById("kpiTotal").innerText=rows.length;
-
-const models=new Set(rows.map(r=>r.model));
-document.getElementById("kpiModels").innerText=models.size;
-
-const table=document.getElementById("recentTable");
-
-rows.forEach(r=>{
-
-table.innerHTML+=`
-<tr>
-<td>${r.model}</td>
-<td>${r.system_type}</td>
-<td>${r.system_issue}</td>
-<td>${r.probable_cause}</td>
-<td>${new Date(r.created_at).toLocaleTimeString()}</td>
-</tr>
-`;
-
-});
+container.innerHTML = data.map(row=>`
+<div class="item">
+<div class="model">${row.model}</div>
+<div class="meta">${row.category} • ${row.system_issue}</div>
+</div>
+`).join("")
 
 }
 
-loadData();
+loadDashboard()
 
 </script>
 
