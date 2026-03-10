@@ -211,15 +211,15 @@ function render(rows) {
   var tbody = document.getElementById('tbody');
   rows.forEach(function(r) {
     var sev = Number(r.severity)||1;
-    var t = r.created_at ? new Date(r.created_at).toLocaleTimeString('da-DK',{hour:'2-digit',minute:'2-digit'}) : '—';
+    var t = r.created_at ? new Date(r.created_at).toLocaleTimeString('da-DK',{hour:'2-digit',minute:'2-digit'}) : '–';
     var tr = document.createElement('tr');
     tr.innerHTML =
-      '<td><strong>'+(r.model||'—')+'</strong></td>'+
-      '<td><span class="pill" style="background:#0a0a0a20;color:#0a0a0a">'+(r.category||'—')+'</span></td>'+
-      '<td style="color:#6b6b6b;font-size:12px">'+(r.system_issue||'—')+'</td>'+
+      '<td><strong>'+(r.model||'–')+'</strong></td>'+
+      '<td><span class="pill" style="background:#0a0a0a20;color:#0a0a0a">'+(r.category||'–')+'</span></td>'+
+      '<td style="color:#6b6b6b;font-size:12px">'+(r.system_issue||'–')+'</td>'+
       '<td><span class="sev-badge" style="background:'+sevBg(sev)+';color:'+sevColor(sev)+'">'+sev+'</span></td>'+
-      '<td>'+(r.confidence||'—')+'%</td>'+
-      '<td style="font-size:11px;color:#6b6b6b">'+(r.installation_vs_design||'—')+'</td>'+
+      '<td>'+(r.confidence||'–')+'%</td>'+
+      '<td style="font-size:11px;color:#6b6b6b">'+(r.installation_vs_design||'–')+'</td>'+
       '<td style="font-size:11px;color:#6b6b6b">'+t+'</td>';
     tbody.appendChild(tr);
   });
