@@ -131,25 +131,6 @@ textarea { resize:vertical; min-height:80px; line-height:1.6; }
 /* ERROR */
 .error-banner { background:#fdf0ef; border-left:3px solid var(--red); padding:10px 14px; font-size:13px; color:var(--red); margin-bottom:16px; display:none; }
 
-/* SUCCESS */
-.success-screen {
-  display:none; flex-direction:column; align-items:center; justify-content:center;
-  padding:60px 20px; text-align:center; gap:16px;
-}
-.success-icon { font-size:48px; }
-.success-title {
-  font-family:'Barlow Condensed',sans-serif; font-size:32px; font-weight:800;
-  text-transform:uppercase; letter-spacing:0.02em;
-}
-.success-sub { color:var(--grey3); font-size:15px; max-width:280px; line-height:1.6; }
-.btn-again {
-  font-family:'Barlow Condensed',sans-serif; font-size:13px; font-weight:700;
-  letter-spacing:0.12em; text-transform:uppercase; background:transparent; color:var(--black);
-  border:2px solid var(--black); padding:12px 28px; border-radius:100px; cursor:pointer;
-  margin-top:8px; transition:all 0.15s;
-}
-.btn-again:hover { background:var(--black); color:white; }
-
 /* RESULT CARD */
 .result-card {
   background:var(--white); padding:24px; margin-top:24px;
@@ -206,36 +187,34 @@ textarea { resize:vertical; min-height:80px; line-height:1.6; }
 <div class="form-wrap">
   <div id="errorBanner" class="error-banner"></div>
 
-  <!-- STEP 1: Symptom buttons -->
   <div class="step-label">What is the problem?</div>
   <div class="btn-grid">
-    <button class="sym-btn" data-val="Flow deviation" onclick="toggleSym(this)">
+    <button class="sym-btn" type="button" data-val="Flow deviation" onclick="toggleSym(this)">
       Flow too low / high
       <span>Not reaching design flow</span>
     </button>
-    <button class="sym-btn" data-val="Noise" onclick="toggleSym(this)">
+    <button class="sym-btn" type="button" data-val="Noise" onclick="toggleSym(this)">
       Noise
       <span>Unusual sound level</span>
     </button>
-    <button class="sym-btn" data-val="Vibration" onclick="toggleSym(this)">
+    <button class="sym-btn" type="button" data-val="Vibration" onclick="toggleSym(this)">
       Vibration
       <span>Excessive shaking</span>
     </button>
-    <button class="sym-btn" data-val="Pressure issue" onclick="toggleSym(this)">
+    <button class="sym-btn" type="button" data-val="Pressure issue" onclick="toggleSym(this)">
       Pressure
       <span>Not reaching static pressure</span>
     </button>
-    <button class="sym-btn" data-val="Overheating" onclick="toggleSym(this)">
+    <button class="sym-btn" type="button" data-val="Overheating" onclick="toggleSym(this)">
       Overheating
       <span>Motor or bearing temp</span>
     </button>
-    <button class="sym-btn" data-val="Other" onclick="toggleSym(this)">
+    <button class="sym-btn" type="button" data-val="Other" onclick="toggleSym(this)">
       Other
       <span>Describe below</span>
     </button>
   </div>
 
-  <!-- STEP 2: Model -->
   <div class="step-label">Impeller details</div>
   <div class="two-col">
     <div class="input-group">
@@ -256,7 +235,6 @@ textarea { resize:vertical; min-height:80px; line-height:1.6; }
     </div>
   </div>
 
-  <!-- STEP 3: Flows -->
   <div class="step-label">Performance (optional)</div>
   <div class="two-col">
     <div class="input-group">
@@ -275,17 +253,15 @@ textarea { resize:vertical; min-height:80px; line-height:1.6; }
     </div>
   </div>
 
-  <!-- STEP 4: Description -->
   <div class="step-label">What happened?</div>
   <div class="input-group">
     <textarea id="reality" placeholder="Describe what you observed — when did it start, operating conditions, any recent changes..."></textarea>
   </div>
 
   <div class="submit-area">
-    <button class="btn-submit" id="submitBtn" onclick="submit()">Submit Feedback →</button>
+    <button class="btn-submit" id="submitBtn" type="button" onclick="submit()">Submit Feedback →</button>
   </div>
 
-  <!-- RESULT -->
   <div class="demo-badge" id="demoBadge">Demo mode — deploy to Vercel with API key for live Claude analysis</div>
   <div class="result-card" id="resultCard">
     <div class="result-cat" id="resCat"></div>
@@ -295,12 +271,35 @@ textarea { resize:vertical; min-height:80px; line-height:1.6; }
 </div>
 
 <script>
+const SUPABASE_URL = 'https://dnjkexltcdgpjjmqwwmk.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRuamtleGx0Y2RncGpqbXF3d21rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4NzgyMzAsImV4cCI6MjA4ODQ1NDIzMH0.GpJ0woQTur1HFpPDl-pRLZDpiO7eJESrr6IxE2HF8Q4';
+
 let selectedSymptom = '';
 
 function toggleSym(el) {
   document.querySelectorAll('.sym-btn').forEach(b => b.classList.remove('selected'));
   el.classList.add('selected');
   selectedSymptom = el.dataset.val;
+}
+
+async function saveToSupabase(payload) {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/feedback`, {
+    method: 'POST',
+    headers: {
+      'apikey': SUPABASE_KEY,
+      'Authorization': `Bearer ${SUPABASE_KEY}`,
+      'Content-Type': 'application/json',
+      'Prefer': 'return=representation'
+    },
+    body: JSON.stringify(payload)
+  });
+
+  if (!res.ok) {
+    const txt = await res.text();
+    throw new Error(`Supabase save failed: ${res.status} ${txt}`);
+  }
+
+  return res.json();
 }
 
 async function submit() {
@@ -317,6 +316,7 @@ async function submit() {
     err.style.display = 'block';
     return;
   }
+
   err.style.display = 'none';
   btn.disabled = true;
   btn.textContent = 'Analyzing...';
@@ -332,61 +332,180 @@ async function submit() {
 
   try {
     const res = await fetch('/api/analyze', {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({text, model, system_type, expected_flow, actual_flow})
     });
+
+    let data;
     if (!res.ok) throw new Error('api_' + res.status);
-    const data = await res.json();
-    showResult(data, false);
-  } catch(e) {
+    data = await res.json();
+
+    await handleResult(data, false, {
+      model,
+      system_type,
+      expected_flow,
+      actual_flow,
+      reality
+    });
+  } catch (e) {
     const demo = buildDemo(selectedSymptom || reality, system_type, expected_flow, actual_flow);
-    showResult(demo, true);
+
+    await handleResult(demo, true, {
+      model,
+      system_type,
+      expected_flow,
+      actual_flow,
+      reality
+    });
   } finally {
     btn.disabled = false;
     btn.textContent = 'Submit Feedback →';
   }
 }
 
-function showResult(data, isDemo) {
+async function handleResult(data, isDemo, formData) {
   document.getElementById('demoBadge').style.display = isDemo ? 'block' : 'none';
   document.getElementById('resCat').textContent = data.category || 'Unknown';
   document.getElementById('resCause').textContent = data.probable_cause || data.possible_cause || '';
   const actEl = document.getElementById('resActions');
-  actEl.innerHTML = (data.recommended_actions||[]).map(a => '<div class="result-action">'+a+'</div>').join('');
+  actEl.innerHTML = (data.recommended_actions || []).map(a => '<div class="result-action">' + a + '</div>').join('');
   document.getElementById('resultCard').style.display = 'block';
   document.getElementById('resultCard').scrollIntoView({behavior:'smooth', block:'start'});
 
-  // Save to session storage for dashboard demo
-  const submissions = JSON.parse(sessionStorage.getItem('submissions')||'[]');
+  const payload = {
+    model: formData.model || null,
+    system_type: formData.system_type || null,
+    category: data.category || selectedSymptom || 'Unknown',
+    system_issue: selectedSymptom || 'Unknown',
+    probable_cause: data.probable_cause || data.possible_cause || formData.reality || null,
+    severity: Number(data.severity) || 3,
+    confidence: Number(data.confidence) || 75,
+    installation_vs_design: data.installation_vs_design || 'Unknown',
+    impeller_relevance: data.impeller_relevance || 'Unknown',
+    expected_flow: formData.expected_flow ? Number(formData.expected_flow) : null,
+    actual_flow: formData.actual_flow ? Number(formData.actual_flow) : null
+  };
+
+  await saveToSupabase(payload);
+
+  const submissions = JSON.parse(sessionStorage.getItem('submissions') || '[]');
   submissions.unshift({
     id: Date.now(),
-    model: document.getElementById('model').value||'—',
-    system: document.getElementById('system_type').value||'—',
-    symptom: selectedSymptom||'Other',
-    category: data.category,
-    cause: data.possible_cause,
-    severity: data.severity||3,
-    confidence: data.confidence||75,
-    actions: data.recommended_actions||[],
-    time: new Date().toLocaleString('en-GB', {hour:'2-digit',minute:'2-digit',day:'2-digit',month:'short'})
+    model: formData.model || '—',
+    system: formData.system_type || '—',
+    symptom: selectedSymptom || 'Other',
+    category: data.category || 'Unknown',
+    cause: data.probable_cause || data.possible_cause || '',
+    severity: Number(data.severity) || 3,
+    confidence: Number(data.confidence) || 75,
+    actions: data.recommended_actions || [],
+    time: new Date().toLocaleString('en-GB', {hour:'2-digit', minute:'2-digit', day:'2-digit', month:'short'})
   });
-  sessionStorage.setItem('submissions', JSON.stringify(submissions.slice(0,50)));
+  sessionStorage.setItem('submissions', JSON.stringify(submissions.slice(0, 50)));
 }
 
 function buildDemo(input, sys, exp, act) {
-  const t = (input||'').toLowerCase();
-  if (t.includes('flow') || t.includes('flow deviation') || (exp && act && Number(act) < Number(exp)*0.9))
-    return {category:'Flow deviation',possible_cause:'Actual airflow is below specification. Likely caused by higher system resistance than designed — check duct restrictions, damper positions, or blade pitch.',severity:3,confidence:81,recommended_actions:['Measure static pressure at inlet/outlet','Verify all dampers are fully open','Check blade pitch against spec sheet','Re-run system curve calculation']};
-  if (t.includes('noise'))
-    return {category:'Noise',possible_cause:'Elevated noise indicates blade tip interference, inlet turbulence, or structural resonance at blade pass frequency.',severity:3,confidence:78,recommended_actions:['Measure SPL at 1m','Inspect inlet clearance','Check for loose mounting hardware','Verify RPM matches nameplate']};
-  if (t.includes('vibrat'))
-    return {category:'Vibration',possible_cause:'Mass imbalance on impeller or bearing wear. Also check resonance between fan frequency and mounting frame natural frequency.',severity:4,confidence:83,recommended_actions:['Dynamic balance check (ISO 1940 G2.5)','Inspect bearings for contamination','Check all mounting bolts','Measure vibration velocity mm/s RMS']};
-  if (t.includes('pressure'))
-    return {category:'Pressure issue',possible_cause:'Fan not reaching required static pressure. Possible stall, incorrect impeller diameter, or system leakage.',severity:3,confidence:76,recommended_actions:['Plot duty point on fan curve','Seal duct joints','Verify impeller diameter and blade count','Check motor speed with tachometer']};
-  if (t.includes('heat') || t.includes('overheat'))
-    return {category:'Overheating',possible_cause:'Motor temperature exceeds limits due to insufficient cooling airflow, overloading from high air density, or blocked ventilation.',severity:4,confidence:80,recommended_actions:['Check motor ambient temperature vs. class rating','Measure actual current vs. FLA','Verify cooling path is unobstructed','Review thermal protection settings']};
-  return {category:'General issue',possible_cause:'Insufficient data for precise diagnosis. Please add more detail about symptoms and operating conditions.',severity:2,confidence:55,recommended_actions:['Document operating conditions at time of issue','Compare with commissioning data','Contact Multi-Wing technical support']};
+  const t = (input || '').toLowerCase();
+
+  if (t.includes('flow') || t.includes('flow deviation') || (exp && act && Number(act) < Number(exp) * 0.9)) {
+    return {
+      category: 'Flow deviation',
+      possible_cause: 'Actual airflow is below specification. Likely caused by higher system resistance than designed — check duct restrictions, damper positions, or blade pitch.',
+      severity: 3,
+      confidence: 81,
+      installation_vs_design: 'Installation',
+      impeller_relevance: 'High',
+      recommended_actions: [
+        'Measure static pressure at inlet/outlet',
+        'Verify all dampers are fully open',
+        'Check blade pitch against spec sheet',
+        'Re-run system curve calculation'
+      ]
+    };
+  }
+
+  if (t.includes('noise')) {
+    return {
+      category: 'Noise',
+      possible_cause: 'Elevated noise indicates blade tip interference, inlet turbulence, or structural resonance at blade pass frequency.',
+      severity: 3,
+      confidence: 78,
+      installation_vs_design: 'Unknown',
+      impeller_relevance: 'Medium',
+      recommended_actions: [
+        'Measure SPL at 1m',
+        'Inspect inlet clearance',
+        'Check for loose mounting hardware',
+        'Verify RPM matches nameplate'
+      ]
+    };
+  }
+
+  if (t.includes('vibrat')) {
+    return {
+      category: 'Vibration',
+      possible_cause: 'Mass imbalance on impeller or bearing wear. Also check resonance between fan frequency and mounting frame natural frequency.',
+      severity: 4,
+      confidence: 83,
+      installation_vs_design: 'Unknown',
+      impeller_relevance: 'High',
+      recommended_actions: [
+        'Dynamic balance check (ISO 1940 G2.5)',
+        'Inspect bearings for contamination',
+        'Check all mounting bolts',
+        'Measure vibration velocity mm/s RMS'
+      ]
+    };
+  }
+
+  if (t.includes('pressure')) {
+    return {
+      category: 'Pressure issue',
+      possible_cause: 'Fan not reaching required static pressure. Possible stall, incorrect impeller diameter, or system leakage.',
+      severity: 3,
+      confidence: 76,
+      installation_vs_design: 'Design',
+      impeller_relevance: 'High',
+      recommended_actions: [
+        'Plot duty point on fan curve',
+        'Seal duct joints',
+        'Verify impeller diameter and blade count',
+        'Check motor speed with tachometer'
+      ]
+    };
+  }
+
+  if (t.includes('heat') || t.includes('overheat')) {
+    return {
+      category: 'Overheating',
+      possible_cause: 'Motor temperature exceeds limits due to insufficient cooling airflow, overloading from high air density, or blocked ventilation.',
+      severity: 4,
+      confidence: 80,
+      installation_vs_design: 'Installation',
+      impeller_relevance: 'Medium',
+      recommended_actions: [
+        'Check motor ambient temperature vs. class rating',
+        'Measure actual current vs. FLA',
+        'Verify cooling path is unobstructed',
+        'Review thermal protection settings'
+      ]
+    };
+  }
+
+  return {
+    category: 'General issue',
+    possible_cause: 'Insufficient data for precise diagnosis. Please add more detail about symptoms and operating conditions.',
+    severity: 2,
+    confidence: 55,
+    installation_vs_design: 'Unknown',
+    impeller_relevance: 'Unknown',
+    recommended_actions: [
+      'Document operating conditions at time of issue',
+      'Compare with commissioning data',
+      'Contact Multi-Wing technical support'
+    ]
+  };
 }
 </script>
 </body>
