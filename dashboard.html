@@ -4,217 +4,243 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MULTI*WING — Field Feedback Dashboard</title>
-
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
-
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
-
-*{margin:0;padding:0;box-sizing:border-box}
-
-:root{
---black:#0a0a0a;
---white:#fff;
---bg:#f0f1f2;
---grey:#e2e3e5;
---grey2:#b0b4b8;
---grey3:#6b7075;
-}
-
-body{
-font-family:'Barlow',sans-serif;
-background:var(--bg);
-color:var(--black);
-min-height:100vh;
-}
-
-/* HEADER */
-
-header{
-background:white;
-border-bottom:1px solid var(--grey);
-padding:0 20px;
-height:56px;
-display:flex;
-align-items:center;
-justify-content:space-between;
-}
-
-.logo{
-font-family:'Barlow Condensed';
-font-weight:900;
-font-size:18px;
-letter-spacing:.04em;
-}
-
-.header-links a{
-font-family:'Barlow Condensed';
-font-size:11px;
-letter-spacing:.12em;
-text-transform:uppercase;
-text-decoration:none;
-color:var(--grey3);
-margin-left:20px;
-}
-
-/* HERO */
-
-.hero{
-background:black;
-color:white;
-padding:40px 20px;
-}
-
-.hero-title{
-font-family:'Barlow Condensed';
-font-size:42px;
-font-weight:900;
-text-transform:uppercase;
-line-height:1;
-}
-
-.stats{
-display:flex;
-gap:60px;
-margin-top:20px;
-}
-
-.stat-number{
-font-family:'Barlow Condensed';
-font-size:36px;
-font-weight:900;
-}
-
-.stat-label{
-font-family:'Barlow Condensed';
-font-size:10px;
-letter-spacing:.2em;
-color:#aaa;
-text-transform:uppercase;
-}
-
-/* CONTENT */
-
-.container{
-max-width:900px;
-margin:40px auto;
-padding:0 20px;
-}
-
-.submissions{
-background:white;
-padding:30px;
-border:1px solid var(--grey);
-}
-
-.item{
-padding:16px 0;
-border-bottom:1px solid var(--grey);
-}
-
-.item:last-child{
-border-bottom:none;
-}
-
-.model{
-font-family:'Barlow Condensed';
-font-size:18px;
-font-weight:700;
-}
-
-.meta{
-font-size:13px;
-color:var(--grey3);
-margin-top:4px;
-}
-
+  :root { --black:#0a0a0a; --white:#fff; --grey-light:#f2f2f0; --grey-mid:#e0e0dc; --grey-dark:#6b6b6b; --red:#c0392b; --blue:#1a6eb5; --green:#2e7d4f; --amber:#e8a020; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--grey-light); font-family:'Barlow',sans-serif; color:var(--black); }
+  nav { background:var(--black); padding:18px 40px; display:flex; align-items:center; justify-content:space-between; }
+  .logo { display:flex; align-items:center; gap:14px; }
+  .logo-svg { width:36px; height:36px; }
+  .logo-text { color:#fff; font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:18px; letter-spacing:.05em; }
+  .logo-sub { color:#888; font-size:10px; letter-spacing:.2em; text-transform:uppercase; margin-top:1px; }
+  .nav-link { color:#aaa; font-size:12px; letter-spacing:.15em; text-transform:uppercase; text-decoration:none; }
+  .nav-link:hover { color:#fff; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+  .spin { animation:spin 8s linear infinite; transform-origin:50px 50px; }
+  .hero { background:var(--black); padding:48px 40px 40px; }
+  .hero-label { color:#666; font-size:10px; letter-spacing:.2em; text-transform:uppercase; margin-bottom:8px; }
+  .hero-title { color:#fff; font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:clamp(36px,5vw,64px); line-height:.95; text-transform:uppercase; }
+  .hero-kpis { display:flex; gap:48px; margin-top:32px; }
+  .kpi-val { color:#fff; font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:40px; line-height:1; }
+  .kpi-label { color:#666; font-size:10px; letter-spacing:.15em; text-transform:uppercase; margin-top:4px; }
+  .content { padding:40px; max-width:1400px; margin:0 auto; }
+  .section-title { font-family:'Barlow Condensed',sans-serif; font-size:11px; font-weight:700; letter-spacing:.2em; text-transform:uppercase; color:var(--grey-dark); margin-bottom:16px; }
+  .stat-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:40px; }
+  .stat-card { background:#fff; padding:24px; border-radius:2px; }
+  .stat-label { font-size:10px; letter-spacing:.15em; text-transform:uppercase; color:var(--grey-dark); margin-bottom:12px; }
+  .stat-val { font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:32px; line-height:1; }
+  .stat-sub { font-size:11px; color:var(--grey-dark); margin-top:4px; }
+  .chart-grid { display:grid; grid-template-columns:2fr 1fr 1fr; gap:16px; margin-bottom:40px; }
+  .chart-card { background:#fff; padding:24px; border-radius:2px; }
+  .chart-card h3 { font-family:'Barlow Condensed',sans-serif; font-size:11px; font-weight:700; letter-spacing:.15em; text-transform:uppercase; color:var(--grey-dark); margin-bottom:20px; }
+  .chart-wrap { position:relative; height:200px; }
+  .table-card { background:#fff; border-radius:2px; overflow:hidden; margin-bottom:40px; }
+  .table-card h3 { font-family:'Barlow Condensed',sans-serif; font-size:11px; font-weight:700; letter-spacing:.15em; text-transform:uppercase; color:var(--grey-dark); padding:20px 24px 16px; border-bottom:1px solid var(--grey-mid); }
+  table { width:100%; border-collapse:collapse; }
+  th { font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--grey-dark); padding:12px 16px; text-align:left; border-bottom:1px solid var(--grey-mid); }
+  td { padding:12px 16px; font-size:13px; border-bottom:1px solid var(--grey-mid); }
+  tr:last-child td { border-bottom:none; }
+  .pill { display:inline-block; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:600; }
+  .sev-badge { display:inline-flex; align-items:center; justify-content:center; width:28px; height:28px; border-radius:50%; font-size:12px; font-weight:700; }
+  .status { text-align:center; padding:80px; color:var(--grey-dark); font-size:14px; }
 </style>
 </head>
-
 <body>
 
-<header>
-
-<div class="logo">
-MULTI<span style="display:inline-block;transform:rotate(20deg)">✶</span>WING
-</div>
-
-<div class="header-links">
-<a href="index.html">Submit Feedback</a>
-</div>
-
-</header>
+<nav>
+  <a class="logo" href="/" style="text-decoration:none">
+    <div style="display:flex;align-items:center;gap:9px">
+      <svg style="width:32px;height:32px" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <g class="spin">
+          <path d="M41 50 L37 9 Q50 1 63 9 L59 50 Z" fill="#ffffff" transform="rotate(0 50 50)"/>
+          <path d="M41 50 L37 9 Q50 1 63 9 L59 50 Z" fill="#ffffff" transform="rotate(60 50 50)"/>
+          <path d="M41 50 L37 9 Q50 1 63 9 L59 50 Z" fill="#ffffff" transform="rotate(120 50 50)"/>
+          <path d="M41 50 L37 9 Q50 1 63 9 L59 50 Z" fill="#ffffff" transform="rotate(180 50 50)"/>
+          <path d="M41 50 L37 9 Q50 1 63 9 L59 50 Z" fill="#ffffff" transform="rotate(240 50 50)"/>
+          <path d="M41 50 L37 9 Q50 1 63 9 L59 50 Z" fill="#ffffff" transform="rotate(300 50 50)"/>
+        </g>
+      </svg>
+      <div>
+        <div style="display:flex;align-items:center;line-height:1">
+          <span style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:900;letter-spacing:0.04em;color:#fff">MULTI</span>
+          <span style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:900;letter-spacing:0.04em;color:#fff">*</span>
+          <span style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:900;letter-spacing:0.04em;color:#fff">WING</span>
+          <span style="font-family:'Barlow Condensed',sans-serif;font-size:9px;font-weight:700;color:#fff;vertical-align:super;margin-left:1px">™</span>
+        </div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:#888;margin-top:2px">Field Feedback Dashboard</div>
+      </div>
+    </div>
+  </a>
+  <a href="/" class="nav-link">Submit Feedback</a>
+</nav>
 
 <div class="hero">
-
-<div class="hero-title">
-Field Feedback<br>
-Intelligence
+  <div class="hero-label">Real-time analysis overview</div>
+  <div class="hero-title">Field Feedback<br>Intelligence</div>
+  <div class="hero-kpis">
+    <div class="kpi">
+      <div class="kpi-val" id="kpiTotal">—</div>
+      <div class="kpi-label">Total Submissions</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-val" id="kpiConf">—</div>
+      <div class="kpi-label">Avg Confidence</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-val" id="kpiInst">—</div>
+      <div class="kpi-label">Install Issues</div>
+    </div>
+  </div>
 </div>
 
-<div class="stats">
+<div class="content">
+  <div id="status" class="status">Loading live data...</div>
+  <div id="main" style="display:none">
+    <div class="section-title">Key Metrics</div>
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-label">Most Common Issue</div>
+        <div class="stat-val" id="topCat">—</div>
+        <div class="stat-sub" id="topPct"></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Avg Severity</div>
+        <div class="stat-val" id="avgSev">—</div>
+        <div class="stat-sub">out of 5</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Installation Issues</div>
+        <div class="stat-val" id="instPct">—</div>
+        <div class="stat-sub">of all cases</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">High Severity (4-5)</div>
+        <div class="stat-val" id="highSev">—</div>
+        <div class="stat-sub">cases need attention</div>
+      </div>
+    </div>
 
-<div>
-<div id="totalSubmissions" class="stat-number">0</div>
-<div class="stat-label">Total Submissions</div>
-</div>
+    <div class="section-title">Issue Breakdown</div>
+    <div class="chart-grid">
+      <div class="chart-card">
+        <h3>Problem Categories</h3>
+        <div class="chart-wrap"><canvas id="catChart"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <h3>Installation vs Design</h3>
+        <div class="chart-wrap"><canvas id="instChart"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <h3>Impeller Relevance</h3>
+        <div class="chart-wrap"><canvas id="relChart"></canvas></div>
+      </div>
+    </div>
 
-<div>
-<div id="uniqueModels" class="stat-number">0</div>
-<div class="stat-label">Unique Models</div>
-</div>
-
-</div>
-
-</div>
-
-<div class="container">
-
-<div class="submissions" id="submissions">
-No submissions yet.
-</div>
-
+    <div class="table-card">
+      <h3>Recent Submissions</h3>
+      <table>
+        <thead><tr>
+          <th>Model</th><th>Category</th><th>System Issue</th>
+          <th>Sev</th><th>Conf</th><th>Type</th><th>Time</th>
+        </tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </div>
 </div>
 
 <script>
+var SURL = 'https://dnjkexltcdgpjjmqwwmk.supabase.co';
+var SKEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRuamtleGx0Y2RncGpqbXF3d21rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4NzgyMzAsImV4cCI6MjA4ODQ1NDIzMH0.GpJ0woQTur1HFpPDl-pRLZDpiO7eJESrr6IxE2HF8Q4';
 
-const SUPABASE_URL = "https://dnjkexltcdgpjjmqwwmk.supabase.co"
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-
-async function loadDashboard(){
-
-const res = await fetch(`${SUPABASE_URL}/rest/v1/feedback?select=*`,{
-headers:{
-apikey:SUPABASE_KEY,
-Authorization:`Bearer ${SUPABASE_KEY}`
-}
-})
-
-const data = await res.json()
-
-document.getElementById("totalSubmissions").innerText = data.length
-
-const models = [...new Set(data.map(r=>r.model))]
-document.getElementById("uniqueModels").innerText = models.length
-
-const container = document.getElementById("submissions")
-
-if(data.length === 0){
-container.innerHTML = "No submissions yet."
-return
+function count(arr, key) {
+  var m = {};
+  arr.forEach(function(r) { var v = r[key] || 'Unknown'; m[v] = (m[v]||0)+1; });
+  return m;
 }
 
-container.innerHTML = data.map(row=>`
-<div class="item">
-<div class="model">${row.model}</div>
-<div class="meta">${row.category} • ${row.system_issue}</div>
-</div>
-`).join("")
+function sevColor(s) { return s >= 4 ? '#c0392b' : s >= 3 ? '#e8a020' : '#2e7d4f'; }
+function sevBg(s) { return s >= 4 ? '#fee2e2' : s >= 3 ? '#fef3c7' : '#dcfce7'; }
 
+function render(rows) {
+  var n = rows.length;
+  var totalConf = 0, totalSev = 0, instCount = 0, highCount = 0;
+  rows.forEach(function(r) {
+    totalConf += Number(r.confidence)||0;
+    totalSev += Number(r.severity)||0;
+    if ((r.installation_vs_design||'').toLowerCase().indexOf('installation') >= 0) instCount++;
+    if (Number(r.severity) >= 4) highCount++;
+  });
+
+  document.getElementById('kpiTotal').textContent = n;
+  document.getElementById('kpiConf').textContent = Math.round(totalConf/n) + '%';
+  document.getElementById('kpiInst').textContent = Math.round(instCount/n*100) + '%';
+  document.getElementById('avgSev').textContent = (totalSev/n).toFixed(1);
+  document.getElementById('instPct').textContent = Math.round(instCount/n*100) + '%';
+  document.getElementById('highSev').textContent = highCount;
+
+  var cats = count(rows, 'category');
+  var topEntry = Object.entries(cats).sort(function(a,b){return b[1]-a[1];})[0];
+  if (topEntry) {
+    document.getElementById('topCat').textContent = topEntry[0];
+    document.getElementById('topPct').textContent = Math.round(topEntry[1]/n*100) + '% of cases';
+  }
+
+  new Chart(document.getElementById('catChart'), {
+    type:'bar',
+    data:{ labels:Object.keys(cats), datasets:[{data:Object.values(cats),backgroundColor:'#0a0a0a',borderRadius:2}] },
+    options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{y:{beginAtZero:true,ticks:{stepSize:1}}} }
+  });
+
+  var inst = count(rows, 'installation_vs_design');
+  new Chart(document.getElementById('instChart'), {
+    type:'doughnut',
+    data:{ labels:Object.keys(inst), datasets:[{data:Object.values(inst),backgroundColor:['#0a0a0a','#1a6eb5','#e8a020','#aaa']}] },
+    options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'bottom',labels:{font:{size:10}}}} }
+  });
+
+  var rel = count(rows, 'impeller_relevance');
+  new Chart(document.getElementById('relChart'), {
+    type:'doughnut',
+    data:{ labels:Object.keys(rel), datasets:[{data:Object.values(rel),backgroundColor:['#c0392b','#e8a020','#2e7d4f','#aaa']}] },
+    options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'bottom',labels:{font:{size:10}}}} }
+  });
+
+  var tbody = document.getElementById('tbody');
+  rows.forEach(function(r) {
+    var sev = Number(r.severity)||1;
+    var t = r.created_at ? new Date(r.created_at).toLocaleTimeString('da-DK',{hour:'2-digit',minute:'2-digit'}) : '—';
+    var tr = document.createElement('tr');
+    tr.innerHTML =
+      '<td><strong>'+(r.model||'—')+'</strong></td>'+
+      '<td><span class="pill" style="background:#0a0a0a20;color:#0a0a0a">'+(r.category||'—')+'</span></td>'+
+      '<td style="color:#6b6b6b;font-size:12px">'+(r.system_issue||'—')+'</td>'+
+      '<td><span class="sev-badge" style="background:'+sevBg(sev)+';color:'+sevColor(sev)+'">'+sev+'</span></td>'+
+      '<td>'+(r.confidence||'—')+'%</td>'+
+      '<td style="font-size:11px;color:#6b6b6b">'+(r.installation_vs_design||'—')+'</td>'+
+      '<td style="font-size:11px;color:#6b6b6b">'+t+'</td>';
+    tbody.appendChild(tr);
+  });
 }
 
-loadDashboard()
-
+fetch(SURL+'/rest/v1/feedback?select=*&order=id.desc&limit=100', {
+  headers:{ 'apikey':SKEY, 'Authorization':'Bearer '+SKEY }
+}).then(function(r){ return r.json(); }).then(function(rows) {
+  console.log('rows:', rows);
+  document.getElementById('status').style.display = 'none';
+  if (!Array.isArray(rows) || rows.length === 0) {
+    document.getElementById('status').style.display = 'block';
+    document.getElementById('status').textContent = 'No submissions yet. Submit some feedback first!';
+    return;
+  }
+  document.getElementById('main').style.display = 'block';
+  render(rows);
+}).catch(function(e) {
+  document.getElementById('status').textContent = 'Error: ' + e.message;
+  console.error(e);
+});
 </script>
-
 </body>
 </html>
